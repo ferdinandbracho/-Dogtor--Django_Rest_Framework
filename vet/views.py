@@ -3,10 +3,17 @@ from django.shortcuts import get_object_or_404
 # Rest_Framework
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import serializers
+from rest_framework import serializers, status
 
 # Serializers
-from .serializers import PetOwnersListSerializer, PetListSerializer, PetOwnerSeralizer, PetSerializer
+from .serializers import (
+    PetOwnersListSerializer, 
+    PetListSerializer, 
+    PetOwnerSeralizer, 
+    PetSerializer, 
+    PetOwnerUpdateSerializer,
+    PetUpdateSerializer
+    )
 
 # Models 
 from .models import PetOwner, Pet
@@ -28,7 +35,8 @@ class PetOwnersListCreateAPIView(APIView):
         serializer = PetOwnerSeralizer(data=request.data)
         serializer.is_valid(raise_exception=True)
         created_instance = serializer.save()
-        return Response(created_instance.__dict__)
+        serialized_instance = PetOwnerSeralizer(created_instance)
+        return Response(serialized_instance.data, status.HTTP_201_CREATED)
 
 class PetListCreateAPIView(APIView):
     """
@@ -46,7 +54,8 @@ class PetListCreateAPIView(APIView):
         serializer = PetSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         created_instance = serializer.save()
-        return Response(created_instance.__dict__)
+        serialized_instance = PetSerializer(created_instance)
+        return Response(serialized_instance.data, status.HTTP_201_CREATED)
 
 class PetOwnerDetailAPIView(APIView):
     """"
@@ -60,6 +69,21 @@ class PetOwnerDetailAPIView(APIView):
         serializer = self.serializer_class(owner)
         return Response(serializer.data)
 
+    def patch(self, request, pk):
+        owner = get_object_or_404(PetOwner, id=pk)
+        serializer = PetOwnerUpdateSerializer(instance=owner, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        updated_instance = serializer.save()
+        serialezed_instance = self.serializer_class(updated_instance)
+        return Response(serialezed_instance.data)
+
+    def delete(self, request, pk):
+        owner = get_object_or_404(PetOwner, id=pk)
+        owner.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class PetDetailAPIView(APIView):
     """
     View for Pet details
@@ -71,3 +95,17 @@ class PetDetailAPIView(APIView):
         pet = get_object_or_404(Pet, id=pk)
         serializer = self.serializer_class(pet)
         return Response(serializer.data)
+
+    def patch(self, request, pk):
+        pet = get_object_or_404(Pet, id=pk)
+        serializers = PetUpdateSerializer(instance=pet, data=request.data)
+        serializers.is_valid(raise_exception=True)
+        updated_instance = serializers.save()
+        serialized_instance = self.serializer_class(updated_instance)
+        return Response(serialized_instance.data)
+
+    def delete(self, request, pk):
+        pet = get_object_or_404(Pet, id=pk)
+        pet.delete()
+        return  Response(status.HTTP_204_NO_CONTENT)
+
