@@ -62,3 +62,16 @@ class PetUpdateSerializer(serializers.Serializer):
         instance.name = validated_data.get('name', instance.name)
         instance.type = validated_data.get('type', instance.type)
         return instance
+
+# ! Serializers Models 
+
+class PetOwnerListSerializerModel(serializers.ModelSerializer):
+    class Meta:
+        model = PetOwner
+        fields = ['id', 'first_name', 'last_name']
+
+class PetListSerializerModel(serializers.ModelSerializer):
+    class Meta:
+        model = Pet
+        fields = ['id', 'name', 'type']
+
