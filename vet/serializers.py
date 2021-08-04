@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PetOwner, Pet
+from .models import PetOwner, Pet, PetDate
 
 # class PetOwnersContactListSerializer(serializers.Serializer):
 #     id = serializers.IntegerField()
@@ -69,9 +69,33 @@ class PetOwnerListSerializerModel(serializers.ModelSerializer):
     class Meta:
         model = PetOwner
         fields = ['id', 'first_name', 'last_name']
+    
+class PetOwnerListCreateModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PetOwner
+        fields = ['first_name', 'last_name', 'address', 'email', 'phone']
 
 class PetListSerializerModel(serializers.ModelSerializer):
     class Meta:
         model = Pet
         fields = ['id', 'name', 'type']
+
+class PetListCreateModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pet
+        fields = ['name', 'type', 'owner']
+
+#! Dates Serializers
+
+class DateListModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PetDate
+        fields = ['datetime','type','pet']
+
+class DateListModelSerializer(serializers.ModelSerializer):
+    pet = PetListCreateModelSerializer()
+    
+    class Meta:
+        model = PetDate
+        fields = ['datetime','type','pet']
 

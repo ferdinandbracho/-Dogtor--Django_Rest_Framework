@@ -1,4 +1,5 @@
 # Django
+from typing import Generic
 from django.shortcuts import get_object_or_404
 
 # Rest_Framework
@@ -13,16 +14,21 @@ from .serializers import (
     PetOwnerSeralizer, 
     PetOwnerUpdateSerializer,
     PetOwnerListSerializerModel,
+    PetOwnerListCreateModelSerializer,
 
     # Pet serializers
     PetListSerializer, 
     PetSerializer, 
     PetUpdateSerializer,
-    PetListSerializerModel
+    PetListSerializerModel,
+    PetListCreateModelSerializer,
+
+    # PetDate
+    DateListModelSerializer,
     )
 
 # Models 
-from .models import PetOwner, Pet
+from .models import PetOwner, Pet, PetDate
 
 # !ApiView
 
@@ -114,14 +120,63 @@ from .models import PetOwner, Pet
 
 # !GenericView
 
-class PetOwnerListGenericView(generics.ListAPIView):
-    queryset = PetOwner.objects.all()
-    serializer_class = PetOwnerListSerializerModel
+# class PetOwnerListGenericView(generics.ListAPIView):
+#     queryset = PetOwner.objects.all()
+#     serializer_class = PetOwnerListSerializerModel
 
-class PetListGenericView(generics.ListAPIView):
-    queryset = Pet.objects.all()
-    serializer_class = PetListSerializerModel
+# class PetListGenericView(generics.ListAPIView):
+#     queryset = Pet.objects.all()
+#     serializer_class = PetListSerializerModel
 
-class PetOwnerRetriveApiView(generics.RetrieveAPIView):
+# class PetOwnerRetriveApiView(generics.RetrieveAPIView):
+#     queryset = PetOwner.objects.all()
+#     serializer_class = PetOwnerSeralizer
+
+# !Pet Owner Views 
+class PetOwnerRetriveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = PetOwner.objects.all()
     serializer_class = PetOwnerSeralizer
+    
+class PetOwnerListCreateAPIView(generics.ListCreateAPIView):
+    queryset = PetOwner.objects.all()
+    serializer_class = PetOwnersListSerializer
+
+    def get_queryset(self):
+        first_name_filter = self.request.GET.get('first_name')
+        filter = {}
+        if first_name_filter:
+            filter['first_name_filter'] = first_name_filter
+        return self.queryset.filter(**filter)
+
+    def get_serializer_class(self):
+        serializer_class = self.serializer_class
+        if self.request.method == 'POST':
+            serializer_class = PetOwnerListCreateModelSerializer
+        return serializer_class
+
+# !Pet Views
+class PetListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Pet.objects.all()
+    serializer_class = PetListSerializer
+
+    def get_serializer_class(self):
+        serializer_class = self.serializer_class
+        if self.request.method == 'POST':
+            serializer_class = PetListCreateModelSerializer
+        return serializer_class
+
+
+class PetRetriveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Pet.objects.all()
+    serializer_class = PetSerializer
+
+# !Dates Views 
+
+class PetDateListAPIView(generics.ListCreateAPIView):
+    queryset = PetDate.objects.all()
+    serializer_class = DateListModelSerializer
+
+class PetDateRetriveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = PetDate.objects.all()
+    serializer_class = DateListModelSerializer
+
