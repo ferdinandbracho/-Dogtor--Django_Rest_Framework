@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-import os 
+import os
+from django_filters import rest_framework 
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -30,6 +31,9 @@ DEBUG = bool(os.getenv('DJANGO_DEBUG', True))
 
 ALLOWED_HOSTS = ['*']
 
+# CORS_ALLOWED_ORIGINS = ['http://localhost:5500']
+CORS_ORIGIN_ALLOW_ALL = True
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,6 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
+    'corsheaders',
     # My apps
     'vet',
 ]
@@ -52,7 +59,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES" : (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+}
 
 ROOT_URLCONF = 'dogtor.urls'
 
